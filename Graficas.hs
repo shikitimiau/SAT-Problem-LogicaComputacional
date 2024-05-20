@@ -18,7 +18,7 @@ type Vertice = Int
 -- Arista | Es una tupla que asocia dos vértices
 type Arista = (Vertice, Vertice)
 
--- Grafica | Definida comoun conjunto de vertices y aristas.
+-- Grafica | Definida como un conjunto de vertices y aristas.
 -- En nuestro caso estos conjuntos los representamos como listas, y posteriormente nos aseguraremos que no haya elementos repetidos en estas.
 data Grafica = Grafica [Vertice] [Arista] deriving Show
 

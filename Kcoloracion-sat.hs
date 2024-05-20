@@ -8,27 +8,27 @@ type Color = Int
 type Coloracion = [(Vertice, Color)]
 
 -- Genera las variables proposicionales para cada vértice y color
-variables :: [Vertice] -> Int -> [[Formula (Vertice, Int)]]
+variables :: [Vertice] -> Color -> [[Formula (Vertice, Color)]]
 variables vs k = [[Var (i, j) | j <- [1..k]] | i <- vs]
 
 -- Restricción 1: Cada vértice debe tener al menos un color
-restriccion1 :: [Vertice] -> Int -> [Formula (Vertice, Int)]
+restriccion1 :: [Vertice] -> Color -> [Formula (Vertice, Color)]
 restriccion1 vs k = [Some [Var (i, j) | j <- [1..k]] | i <- vs]
 
 -- Restricción 2: Cada vértice debe tener a lo sumo un color
-restriccion2 :: [Vertice] -> Int -> [Formula (Vertice, Int)]
+restriccion2 :: [Vertice] -> Color -> [Formula (Vertice, Color)]
 restriccion2 vs k = [(Not (Var (i, j))) :||: (Not (Var (i, j'))) | i <- vs, j <- [1..k], j' <- [1..k], j /= j']
 
 -- Restricción 3: Vértices adyacentes no pueden tener el mismo color
-restriccion3 :: [Arista] -> Int -> [Formula (Vertice, Int)]
+restriccion3 :: [Arista] -> Color -> [Formula (Vertice, Color)]
 restriccion3 es k = [(Not (Var (i, j))) :||: (Not (Var (i', j))) | (i, i') <- es, j <- [1..k]]
 
 -- Definir la función para obtener solo los elementos cuyo segundo valor sea True
-filtrarTrue :: Map (Vertice, Int) Bool -> [(Vertice, Int)]
+filtrarTrue :: Map (Vertice, Color) Bool -> [(Vertice, Color)]
 filtrarTrue m = [ (v, c) | ((v, c), True) <- toList m ]
 
 -- Función principal que construye la fórmula y obtiene las k-coloraciones
-kColoracion :: Int -> Grafica -> [Coloracion]
+kColoracion :: Color -> Grafica -> [Coloracion]
 kColoracion k g = case solve formula of
     Nothing    -> []  -- No hay solución
     Just sol   -> [filtrarTrue sol]
