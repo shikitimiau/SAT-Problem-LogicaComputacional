@@ -23,6 +23,10 @@ restriccion2 vs k = [(Not (Var (i, j))) :||: (Not (Var (i, j'))) | i <- vs, j <-
 restriccion3 :: [Arista] -> Color -> [Formula (Vertice, Color)]
 restriccion3 es k = [(Not (Var (i, j))) :||: (Not (Var (i', j))) | (i, i') <- es, j <- [1..k]]
 
+{-- Restricción 4: Se deben utilizar todos los colores.
+restriccion4 :: [Vertice] -> Color -> [Formula (Vertice, Color)]
+restriccion4 vs k = --}
+
 -- Definir la función para obtener solo los elementos cuyo segundo valor sea True
 filtrarTrue :: Map (Vertice, Color) Bool -> [(Vertice, Color)]
 filtrarTrue m = [ (v, c) | ((v, c), True) <- toList m ]
@@ -36,13 +40,25 @@ kColoracion k g = case solve formula of
     vs = vertices g
     es = aristas g
     -- Construcción de la fórmula con todas las restricciones
-    formula = All (restriccion1 vs k ++ restriccion2 vs k ++ restriccion3 es k)
+    formula = All (restriccion1 vs k ++ restriccion2 vs k ++ restriccion3 es k {--++ restriccion4 vs k --})
 
+
+
+solucion k (Grafica vs es) = solve (All (restriccion1 vs k ++ restriccion2 vs k ++ restriccion3 es k {--++ restriccion4 vs k --}))
+
+{-- ------------------
+% Ejemplos de graficas %
+  -------------------- --}
 graficaHexagonoTriangulado = Grafica [1,2,3,4,5,6,7] [(1,2),(1,3),(1,4),(1,5),(1,6),(1,7),(2,3),(3,4),(4,5),(5,6),(6,7),(7,2)]
 
-solucion k (Grafica vs es) = solve (All (restriccion1 vs k ++ restriccion2 vs k ++ restriccion3 es k))
-ejemploGrafHexagonoTriangulado = solucion 3 graficaHexagonoTriangulado
+ejemploGrafHexagonoTriangulado = solucion 7 graficaHexagonoTriangulado
 -- [((1,1),False),((1,2),False),((1,3),True),((2,1),False),((2,2),True),((2,3),False),((3,1),True),((3,2),False),((3,3),False),((4,1),False),((4,2),True),((4,3),False),((5,1),True),((5,2),False),((5,3),False),((6,1),False),((6,2),True),((6,3),False),((7,1),True),((7,2),False),((7,3),False)])
 
-satK3GrafHex = kColoracion 3 graficaHexagonoTriangulado
+satK3GrafHex = kColoracion 7 graficaHexagonoTriangulado
 -- [[(1,3),(2,2),(3,1),(4,2),(5,1),(6,2),(7,1)]]
+
+
+
+graficaZ = Grafica [1,2,3,4] [(1,2), (2,3), (3,4)]
+ejemploZ = solucion 4 graficaZ
+satK2GrafZ = kColoracion 4 graficaZ
