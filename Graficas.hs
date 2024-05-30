@@ -35,7 +35,7 @@ agregarVertice v (Grafica vs es) = Grafica (nub (v:vs)) es
 -- agregarArista | Agrega una arista a una gráfica
 -- Nos aseguramos de quitar repeticiones en los vertices y aristas
 agregarArista :: Arista -> Grafica -> Grafica
-agregarArista e@(v1, v2) (Grafica vs es) = if((v2,v1) `elem` es) then Grafica vs es else Grafica (nub (v1:v2:vs)) (nub (e:es))
+agregarArista e@(v1, v2) (Grafica vs es) = Grafica (nub (v1:v2:vs)) (nub (e:es))
 
 -- vertices | Obtener la lista de vértices de una gráfica
 vertices :: Grafica -> [Vertice]
