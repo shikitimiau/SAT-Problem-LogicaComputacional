@@ -1,5 +1,5 @@
 import Graficas
-import SAT.MiniSat (solve, Formula(..))
+import SAT.MiniSat (solve, solve_all, Formula(..))
 import Data.Map (Map, toList)
 
 import qualified Data.Map as Map
@@ -31,38 +31,72 @@ restriccion4 vs k = [Some [Var (i, j) | i <- vs] | j <- [1..k]]
 filtrarTrue :: Map (Vertice, Color) Bool -> [(Vertice, Color)]
 filtrarTrue m = [ (v, c) | ((v, c), True) <- toList m ]
 
--- Función principal que construye la fórmula y obtiene las k-coloraciones
-kColoracion :: Color -> Grafica -> [Coloracion]
-kColoracion k g = case solve formula of
-    Nothing    -> []  -- No hay solución
-    Just sol   -> [filtrarTrue sol]
+-- Función auxiliar para obtener todas las soluciones
+kColoracionAll :: Int -> Grafica -> [Map (Vertice, Int) Bool]
+kColoracionAll k g = solve_all formula
   where
     vs = vertices g
     es = aristas g
     -- Construcción de la fórmula con todas las restricciones
     formula = All (restriccion1 vs k ++ restriccion2 vs k ++ restriccion3 es k ++ restriccion4 vs k)
 
+-- Función principal que construye la fórmula y obtiene todas las k-coloraciones
+kColoracion :: Int -> Grafica -> [[Coloracion]]
+kColoracion k g = case kColoracionAll k g of
+    []      -> []  -- No hay soluciones
+    sols    -> map (\sol -> [filtrarTrue sol]) sols
 
 
-solucion k (Grafica vs es) = solve (All (restriccion1 vs k ++ restriccion2 vs k ++ restriccion3 es k ++ restriccion4 vs k ))
+-- solucion k (Grafica vs es) = solve (All (restriccion1 vs k ++ restriccion2 vs k ++ restriccion3 es k ++ restriccion4 vs k ))
 
 {-- ------------------
 % Ejemplos de graficas %
   -------------------- --}
 graficaHexagonoTriangulado = Grafica [1,2,3,4,5,6,7] [(1,2),(1,3),(1,4),(1,5),(1,6),(1,7),(2,3),(3,4),(4,5),(5,6),(6,7),(7,2)]
 
-ejemploGrafHexagonoTriangulado = solucion 3 graficaHexagonoTriangulado
--- [((1,1),False),((1,2),False),((1,3),True),((2,1),False),((2,2),True),((2,3),False),((3,1),True),((3,2),False),((3,3),False),((4,1),False),((4,2),True),((4,3),False),((5,1),True),((5,2),False),((5,3),False),((6,1),False),((6,2),True),((6,3),False),((7,1),True),((7,2),False),((7,3),False)])
-
 satK3GrafHex = kColoracion 3 graficaHexagonoTriangulado
--- [[(1,3),(2,2),(3,1),(4,2),(5,1),(6,2),(7,1)]]
+{-
 
-
+[[[(1,3),(2,2),(3,1),(4,2),(5,1),(6,2),(7,1)]],
+[[(1,2),(2,3),(3,1),(4,3),(5,1),(6,3),(7,1)]],
+[[(1,3),(2,1),(3,2),(4,1),(5,2),(6,1),(7,2)]],
+[[(1,1),(2,2),(3,3),(4,2),(5,3),(6,2),(7,3)]],
+[[(1,2),(2,1),(3,3),(4,1),(5,3),(6,1),(7,3)]],
+[[(1,1),(2,3),(3,2),(4,3),(5,2),(6,3),(7,2)]]]
+-}
 
 graficaZ = Grafica [1,2,3,4] [(1,2), (2,3), (3,4)]
 
-ejemploZ = solucion 4 graficaZ
--- [((1,1),False),((1,2),False),((1,3),False),((1,4),True),((2,1),False),((2,2),False),((2,3),True),((2,4),False),((3,1),False),((3,2),True),((3,3),False),((3,4),False),((4,1),True),((4,2),False),((4,3),False),((4,4),False)]
+satK2GrafZ = kColoracion 2 graficaZ
+-- [[[(1,2),(2,1),(3,2),(4,1)]],[[(1,1),(2,2),(3,1),(4,2)]]]
 
-satK2GrafZ = kColoracion 4 graficaZ
--- [[(1,4),(2,3),(3,2),(4,1)]]
+satK4GrafZ = kColoracion 4 graficaZ
+{-
+[[[(1,4),(2,3),(3,2),(4,1)]],
+[[(1,3),(2,4),(3,2),(4,1)]],
+[[(1,4),(2,2),(3,3),(4,1)]],
+[[(1,4),(2,3),(3,1),(4,2)]],
+[[(1,4),(2,1),(3,2),(4,3)]],
+[[(1,4),(2,2),(3,1),(4,3)]],
+[[(1,1),(2,3),(3,4),(4,2)]],
+[[(1,4),(2,1),(3,3),(4,2)]],
+[[(1,3),(2,2),(3,4),(4,1)]],
+[[(1,1),(2,2),(3,4),(4,3)]],
+[[(1,2),(2,4),(3,3),(4,1)]],
+[[(1,3),(2,4),(3,1),(4,2)]],
+[[(1,3),(2,2),(3,1),(4,4)]],
+[[(1,3),(2,1),(3,4),(4,2)]],
+[[(1,2),(2,3),(3,4),(4,1)]],
+[[(1,1),(2,4),(3,3),(4,2)]],
+[[(1,1),(2,4),(3,2),(4,3)]],
+[[(1,1),(2,2),(3,3),(4,4)]],
+[[(1,2),(2,4),(3,1),(4,3)]],
+[[(1,1),(2,3),(3,2),(4,4)]],
+[[(1,3),(2,1),(3,2),(4,4)]],
+[[(1,2),(2,1),(3,4),(4,3)]],
+[[(1,2),(2,3),(3,1),(4,4)]],
+[[(1,2),(2,1),(3,3),(4,4)]]]
+-}
+
+
+
