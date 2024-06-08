@@ -7,10 +7,6 @@ import qualified Data.Map as Map
 type Color = Int
 type Coloracion = [(Vertice, Color)]
 
--- Genera las variables proposicionales para cada vértice y color
-variables :: [Vertice] -> Color -> [[Formula (Vertice, Color)]]
-variables vs k = [[Var (i, j) | j <- [1..k]] | i <- vs]
-
 -- Restricción 1: Cada vértice debe tener al menos un color
 restriccion1 :: [Vertice] -> Color -> [Formula (Vertice, Color)]
 restriccion1 vs k = [Some [Var (i, j) | j <- [1..k]] | i <- vs]
@@ -46,7 +42,6 @@ kColoracion k g = case kColoracionAll k g of
     []      -> []  -- No hay soluciones
     sols    -> map filtrarTrue sols
 
--- solucion k (Grafica vs es) = solve (All (restriccion1 vs k ++ restriccion2 vs k ++ restriccion3 es k ++ restriccion4 vs k ))
 
 {-- ------------------
 % Ejemplos de graficas %
@@ -101,3 +96,20 @@ satK4GrafZ = kColoracion 4 graficaZ
 
 
 
+
+grafica12 = Grafica [1,2,3,4] [(1,2),(1,3),(2,3),(3,4)]
+satK3grafica12 = kColoracion 3 grafica12
+{-
+[[(1,3),(2,1),(3,2),(4,1)],
+[(1,2),(2,3),(3,1),(4,2)],
+[(1,3),(2,1),(3,2),(4,3)],
+[(1,3),(2,2),(3,1),(4,3)],
+[(1,2),(2,3),(3,1),(4,3)],
+[(1,3),(2,2),(3,1),(4,2)],
+[(1,1),(2,3),(3,2),(4,1)],
+[(1,2),(2,1),(3,3),(4,1)],
+[(1,1),(2,3),(3,2),(4,3)],
+[(1,1),(2,2),(3,3),(4,1)],
+[(1,1),(2,2),(3,3),(4,2)],
+[(1,2),(2,1),(3,3),(4,2)]]
+-}
